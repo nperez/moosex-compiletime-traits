@@ -42,9 +42,16 @@ traits that need to be applied.
         if(defined($traits))
         {
             my $meta = $class->meta;
-            $meta->make_mutable();
-            Moose::Util::apply_all_roles($meta, @$traits);
-            $meta->make_immutable();
+            if($meta->isa('Moose::Meta::Class') && $meta->is_immutable)
+            {
+                $meta->make_mutable();
+                Moose::Util::apply_all_roles($meta, @$traits);
+                $meta->make_immutable();
+            }
+            else
+            {
+                Moose::Util::apply_all_roles($meta, @$traits);
+            }
         }
     }
 }
